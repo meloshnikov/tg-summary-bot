@@ -8,8 +8,9 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "module-alias": "^2.2.3",
+    "cron": "^3.5.0",
     "dotenv": "^16.3.1",
+    "module-alias": "^2.2.3",
     "openai": "^4.24.5",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",

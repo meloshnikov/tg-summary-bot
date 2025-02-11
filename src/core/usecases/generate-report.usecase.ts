@@ -1,8 +1,8 @@
-import { Message } from "../entities";
+import { Message, UseCase } from "../entities";
 import { LLMServicePort, MessageRepositoryPort } from "../ports";
 
 
-export class GenerateReport {
+export class GenerateReport implements UseCase {
   constructor(
     private readonly messageRepo: MessageRepositoryPort,
     private readonly llmService: LLMServicePort

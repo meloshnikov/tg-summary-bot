@@ -1,21 +1,15 @@
 import { Telegraf } from "telegraf";
 import { envConfig } from "../../config";
-import { UseCaseFactory } from "src/core/usecases";
-import { LLMFactoryPort, MessageRepositoryPort } from "src/core/ports";
 import { TelegramMapper } from "./telegram-mapper";
+import { TelegramBotPort, UseCaseFactoryPort } from "src/core/ports";
 
 
-export class TelegramBotAdapter {
+export class TelegramBotAdapter implements TelegramBotPort {
   private botName: string;
   private telegraf: Telegraf;
-  private useCaseFactory: UseCaseFactory;
 
-  constructor(
-    private repository: MessageRepositoryPort,
-    private llmFactory: LLMFactoryPort
-  ) {
+  constructor(private useCaseFactory: UseCaseFactoryPort) {
     this.telegraf = new Telegraf(envConfig.get('TELEGRAM_BOT_TOKEN'));
-    this.useCaseFactory = new UseCaseFactory(this.repository, this.llmFactory);
     this.botName = 'undefined';
     this.messageHandlers();
   }
@@ -53,7 +47,7 @@ export class TelegramBotAdapter {
     return regExp.test(message?.text);
   }
 
-  public start = async () => {
-    await this.telegraf.launch(() => console.log("Бот запущен"));
+  public start = () => {
+    this.telegraf.launch(() => console.log("Бот запущен"));
   };
 }

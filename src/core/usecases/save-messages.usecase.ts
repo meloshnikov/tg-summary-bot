@@ -1,8 +1,8 @@
-import { Message } from "../entities";
+import { Message, UseCase } from "../entities";
 import { MessageRepositoryPort } from "../ports";
 
 
-export class SaveMessage {
+export class SaveMessage implements UseCase {
   constructor(private readonly repository: MessageRepositoryPort) {}
 
   async execute(message: Message | null): Promise<void> {
