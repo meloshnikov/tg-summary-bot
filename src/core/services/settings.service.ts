@@ -1,61 +1,79 @@
-import { SettingsRepositoryPort, SettingsServicePort } from "../ports";
+import { DefaultSettingsConfig } from "src/infrastructure/config";
+import { CachePort, SettingsRepositoryPort, SettingsServicePort } from "../ports";
+import { SettingsEntity, SettingsKey, SettingsValueType } from "../schemas/settings-schema";
 
 export class SettingsService implements SettingsServicePort {
-  private cache = new Map<string, Map<string, any>>();
+  constructor(
+    private repository: SettingsRepositoryPort,
+    private cache: CachePort
+  ) {}
 
-  constructor(private repository: SettingsRepositoryPort) {}
+  async get<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<SettingsValueType<T, K>> {
+    const cachedValue = await this.cache.get(entityType, entityId, key);
+    if (cachedValue !== undefined) return cachedValue;
 
-  async get<T>(entityType: string, entityId: number, key: string): Promise<T | null> {
-    const entityCache = this.getEntityCache(entityType, entityId);
-    if (entityCache.has(key)) return entityCache.get(key);
-
-    const value = await this.repository.getValue<T>(entityType, entityId, key);
-    if (value !== null) {
-      entityCache.set(key, value);
-    }
-    return value;
-  }
-
-  async getAll(entityType: string, entityId: number): Promise<Record<string, any>> {
-    const cacheKey = this.getCacheKey(entityType, entityId);
-    if (this.cache.has(cacheKey)) {
-      return Object.fromEntries(this.cache.get(cacheKey)!);
+    const storedValue = await this.repository.getValue(entityType, entityId, key);
+    if (storedValue !== null) {
+      await this.cache.set(entityType, entityId, key, storedValue);
+      return storedValue;
     }
 
-    const values = await this.repository.getAllValues(entityType, entityId);
-    const cacheMap = new Map(Object.entries(values));
-    this.cache.set(cacheKey, cacheMap);
-    return values;
+    const defaultValue = this.getDefaultValue(entityType, key);
+    await this.set(entityType, entityId, key, defaultValue);
+    await this.repository.save(entityType, entityId, key, defaultValue);
+    return defaultValue;
   }
 
-  async set(entityType: string, entityId: number, key: string, value: any, lastModifiedBy?: number): Promise<void> {
+  async set<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K,
+    value: SettingsValueType<T, K>,
+    lastModifiedBy?: number
+  ): Promise<void> {
     await this.repository.save(entityType, entityId, key, value, lastModifiedBy);
-    this.updateCache(entityType, entityId, key, value);
+    await this.cache.set(entityType, entityId, key, value);
   }
 
-  async delete(entityType: string, entityId: number, key: string): Promise<void> {
+  async delete<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<void> {
     await this.repository.deleteKey(entityType, entityId, key);
-    this.updateCache(entityType, entityId, key, undefined);
+    await this.cache.delete(entityType, entityId, key);
   }
 
-  private getCacheKey(entityType: string, entityId: number): string {
-    return `${entityType}:${entityId}`;
+  async getAll<T extends SettingsEntity>(
+    entityType: T,
+    entityId: number
+  ): Promise<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }> {
+    const cachedEntity = await this.cache.getEntity(entityType, entityId);
+
+    if (cachedEntity) return cachedEntity as { [K in SettingsKey<T>]: SettingsValueType<T, K> };
+
+    const storedValues = await this.repository.getAllValues(entityType, entityId);
+    
+    await this.cache.setEntity(entityType, entityId, storedValues);
+    
+    return storedValues as { [K in SettingsKey<T>]: SettingsValueType<T, K> };
   }
 
-  private getEntityCache(entityType: string, entityId: number): Map<string, any> {
-    const cacheKey = this.getCacheKey(entityType, entityId);
-    if (!this.cache.has(cacheKey)) {
-      this.cache.set(cacheKey, new Map());
+  private getDefaultValue<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    key: K
+  ): SettingsValueType<T, K> {
+    const defaultValue = DefaultSettingsConfig[entityType][key];
+
+    const expectedType = typeof DefaultSettingsConfig[entityType][key];
+    if (typeof defaultValue !== expectedType) {
+      throw new Error(`Invalid default type for ${entityType}.${key.toString()}: expected ${expectedType}`);
     }
-    return this.cache.get(cacheKey)!;
-  }
 
-  private updateCache(entityType: string, entityId: number, key: string, value: any): void {
-    const cache = this.getEntityCache(entityType, entityId);
-    if (value === undefined) {
-      cache.delete(key);
-    } else {
-      cache.set(key, value);
-    }
+    return defaultValue as SettingsValueType<T, K>;
   }
 }

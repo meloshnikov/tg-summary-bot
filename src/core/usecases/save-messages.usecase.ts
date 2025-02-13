@@ -11,7 +11,7 @@ export class SaveMessage implements UseCase {
   async execute(message: Message | null): Promise<void> {
     if (this.isValidMessage(message)) {
 
-      const retentionDays = await this.settingsService.get<number>('chat', message.chatId, 'retention_days') || DEFAULT_RETENTION_DAYS;
+      const retentionDays = await this.settingsService.get('chat', message.chatId, 'retention_days');
     
       const expirationDate = Math.floor(Date.now() / 1000) + retentionDays * 86400;
       const messageWithExpiration = message.withExpiration(expirationDate);

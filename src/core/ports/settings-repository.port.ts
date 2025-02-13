@@ -1,6 +1,28 @@
+import { SettingsEntity, SettingsKey, SettingsValueType } from "../schemas/settings-schema";
+
 export interface SettingsRepositoryPort {
-  save(entityType: string, entityId: number, key: string, value: any, lastModifiedBy?: number): Promise<void>;
-  getValue<T>(entityType: string, entityId: number, key: string): Promise<T | null>;
-  getAllValues(entityType: string, entityId: number): Promise<Record<string, any>>;
-  deleteKey(entityType: string, entityId: number, key: string): Promise<void>;
+  save<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K,
+    value: SettingsValueType<T, K>,
+    lastModifiedBy?: number
+  ): Promise<void>;
+
+  getValue<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<SettingsValueType<T, K> | null>;
+
+  getAllValues<T extends SettingsEntity>(
+    entityType: T,
+    entityId: number
+  ): Promise<Partial<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }>>;
+
+  deleteKey<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<void>;
 }

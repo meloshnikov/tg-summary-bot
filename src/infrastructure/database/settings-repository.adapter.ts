@@ -1,6 +1,7 @@
 import { DataSource, Repository } from "typeorm";
 import { Settings } from "./settings-repository.model";
 import { SettingsRepositoryPort } from "src/core/ports";
+import { SettingsEntity, SettingsKey, SettingsValueType } from "src/core/schemas/settings-schema";
 
 export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
   private repository: Repository<Settings>;
@@ -9,14 +10,20 @@ export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     this.repository = dataSource.getRepository(Settings);
   }
 
-  async save(entityType: string, entityId: number, key: string, value: any, lastModifiedBy?: number): Promise<void> {
+  async save<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K,
+    value: SettingsValueType<T, K>,
+    lastModifiedBy?: number
+  ): Promise<void> {
     const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
-    
+
     await this.repository.upsert(
       {
         entityType,
         entityId,
-        key,
+        key: key as string,
         value: stringValue,
         lastModifiedBy,
         lastModifiedAt: new Date()
@@ -25,36 +32,47 @@ export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     );
   }
 
-  async getValue<T>(entityType: string, entityId: number, key: string): Promise<T | null> {
+  async getValue<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<SettingsValueType<T, K> | null> {
     const result = await this.repository.findOne({
-      where: { entityType, entityId, key }
+      where: { entityType, entityId, key: key as string }
     });
-    
+
     if (!result?.value) return null;
-    
+
     try {
-      return JSON.parse(result.value) as T;
+      return JSON.parse(result.value) as SettingsValueType<T, K>;
     } catch {
-      return result.value as T;
+      return result.value as SettingsValueType<T, K>;
     }
   }
 
-  async getAllValues(entityType: string, entityId: number): Promise<Record<string, any>> {
+  async getAllValues<T extends SettingsEntity>(
+    entityType: T,
+    entityId: number
+  ): Promise<Partial<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }>> {
     const results = await this.repository.find({
       where: { entityType, entityId }
     });
 
     return results.reduce((acc, cur) => {
       try {
-        acc[cur.key] = JSON.parse(cur.value!);
+        acc[cur.key as SettingsKey<T>] = JSON.parse(cur.value!);
       } catch {
-        acc[cur.key] = cur.value;
+        acc[cur.key as SettingsKey<T>] = cur.value;
       }
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as any);
   }
 
-  async deleteKey(entityType: string, entityId: number, key: string): Promise<void> {
-    await this.repository.delete({ entityType, entityId, key });
+  async deleteKey<T extends SettingsEntity, K extends SettingsKey<T>>(
+    entityType: T,
+    entityId: number,
+    key: K
+  ): Promise<void> {
+    await this.repository.delete({ entityType, entityId, key: key as string });
   }
 }
