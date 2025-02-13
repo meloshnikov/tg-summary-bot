@@ -6,3 +6,4 @@ export { UseCaseFactoryPort } from "./usecase-factory.port"
 export { SchedulerPort } from "./scheduler.port";
 export { SettingsRepositoryPort } from "./settings-repository.port";
 export { SettingsServicePort } from "./settings-service.port";
+export { CachePort } from "./cache.port";
