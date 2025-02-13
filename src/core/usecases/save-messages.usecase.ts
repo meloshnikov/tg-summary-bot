@@ -1,13 +1,21 @@
 import { Message, UseCase } from "../entities";
-import { MessageRepositoryPort } from "../ports";
+import { MessageRepositoryPort, SettingsServicePort } from "../ports";
 
-
+const DEFAULT_RETENTION_DAYS = 7;
 export class SaveMessage implements UseCase {
-  constructor(private readonly repository: MessageRepositoryPort) {}
+  constructor(
+    private readonly repository: MessageRepositoryPort,
+    private readonly settingsService: SettingsServicePort,
+  ) {}
 
   async execute(message: Message | null): Promise<void> {
     if (this.isValidMessage(message)) {
-      await this.repository.saveMessage(message);
+
+      const retentionDays = await this.settingsService.get<number>('chat', message.chatId, 'retention_days') || DEFAULT_RETENTION_DAYS;
+    
+      const expirationDate = Math.floor(Date.now() / 1000) + retentionDays * 86400;
+      const messageWithExpiration = message.withExpiration(expirationDate);
+      await this.repository.saveMessage(messageWithExpiration);
     }
   }
 

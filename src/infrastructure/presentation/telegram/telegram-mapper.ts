@@ -8,15 +8,16 @@ export class TelegramMapper {
 
     return new Message(
       message?.from.id,
+      message?.chat.id,
+      message?.date,
+      undefined,
       message?.from.first_name,
       message?.from.last_name,
       message?.from.username,
       message?.from.language_code,
       Boolean(message?.from.is_premium) ?? false,
-      message?.chat.id,
       message?.chat.title,
       message?.chat.type,
-      message?.date,
       message?.text ?? message?.caption,
     );
   }

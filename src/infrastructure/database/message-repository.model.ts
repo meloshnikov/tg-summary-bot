@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
-@Index(["chat_id", "date"])
+@Index(["chat_id", "date", "expiration_date"])
 export class Messages {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -38,4 +38,7 @@ export class Messages {
 
   @Column({ type: 'text', nullable: true })
   text?: string;
+
+  @Column({ type: 'bigint' })
+  expiration_date!: number;
 }
