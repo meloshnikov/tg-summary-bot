@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
+@Index(["user_id"])
 @Index(["chat_id", "date", "expiration_date"])
 export class Messages {
   @PrimaryGeneratedColumn()

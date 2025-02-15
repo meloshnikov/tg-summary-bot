@@ -1,7 +1,9 @@
-import { LLMFactoryPort, MessageRepositoryPort, SettingsRepositoryPort, SettingsServicePort } from "../ports";
+import { LLMFactoryPort, MessageRepositoryPort, SettingsServicePort } from "../ports";
 import { UseCaseFactoryPort } from "../ports/usecase-factory.port";
 import { DeleteExpiredMessages } from "./delete-expired-messages.usecase";
 import { GenerateReport } from "./generate-report.usecase";
+import { GetEntitySettings } from "./get-entity-settings.usecase";
+import { GetUserChats } from "./get-user-chats.usecase";
 import { SaveMessage } from "./save-messages.usecase";
 
 export class UseCaseFactory implements UseCaseFactoryPort {
@@ -21,6 +23,14 @@ export class UseCaseFactory implements UseCaseFactoryPort {
 
   getDeleteExpiredMessages() {
     return new DeleteExpiredMessages(this.messageRepo);
+  }
+
+  getUserChats() {
+    return new GetUserChats(this.messageRepo);
+  }
+
+  getEntitySettings() {
+    return new GetEntitySettings(this.settingsService);
   }
 
   /* добавить сценарий переключения llm сервисов */

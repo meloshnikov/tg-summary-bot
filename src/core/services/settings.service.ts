@@ -1,6 +1,7 @@
 import { DefaultSettingsConfig } from "src/infrastructure/config";
 import { CachePort, SettingsRepositoryPort, SettingsServicePort } from "../ports";
 import { SettingsEntity, SettingsKey, SettingsValueType } from "../schemas/settings-schema";
+import { Settings } from "../entities";
 
 export class SettingsService implements SettingsServicePort {
   constructor(
@@ -51,16 +52,8 @@ export class SettingsService implements SettingsServicePort {
   async getAll<T extends SettingsEntity>(
     entityType: T,
     entityId: number
-  ): Promise<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }> {
-    const cachedEntity = await this.cache.getEntity(entityType, entityId);
-
-    if (cachedEntity) return cachedEntity as { [K in SettingsKey<T>]: SettingsValueType<T, K> };
-
-    const storedValues = await this.repository.getAllValues(entityType, entityId);
-    
-    await this.cache.setEntity(entityType, entityId, storedValues);
-    
-    return storedValues as { [K in SettingsKey<T>]: SettingsValueType<T, K> };
+  ): Promise<Settings<T>[]> {
+    return await this.repository.getAllValues(entityType, entityId);
   }
 
   private getDefaultValue<T extends SettingsEntity, K extends SettingsKey<T>>(

@@ -1,3 +1,4 @@
+import { Settings } from "../entities";
 import { SettingsEntity, SettingsKey, SettingsValueType } from "../schemas/settings-schema";
 
 export interface SettingsServicePort {
@@ -10,7 +11,7 @@ export interface SettingsServicePort {
   getAll<T extends SettingsEntity>(
     entityType: T,
     entityId: number
-  ): Promise<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }>;
+  ): Promise<Settings<T>[]>;
 
   set<T extends SettingsEntity, K extends SettingsKey<T>>(
     entityType: T,

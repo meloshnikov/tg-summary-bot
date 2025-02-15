@@ -17,3 +17,9 @@ export type SettingsType = {
     [K in SettingsKey<T>]: SettingsValueType<T, K>
   };
 };
+
+export type SettingsParams<T extends SettingsEntity> = {
+  entityType: T;
+  entityId: number;
+  key?: SettingsKey<T>
+};

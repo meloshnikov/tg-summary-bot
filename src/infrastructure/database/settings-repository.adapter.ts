@@ -1,13 +1,15 @@
-import { DataSource, Repository } from "typeorm";
-import { Settings } from "./settings-repository.model";
+import { DataSource, In, Repository } from "typeorm";
+import { Settings as SettingsModel } from "./settings-repository.model";
 import { SettingsRepositoryPort } from "src/core/ports";
 import { SettingsEntity, SettingsKey, SettingsValueType } from "src/core/schemas/settings-schema";
+import { SettingsMapper } from "src/core/mappers";
+import { Settings } from "src/core/entities";
 
 export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
-  private repository: Repository<Settings>;
+  private repository: Repository<SettingsModel>;
 
   constructor(dataSource: DataSource) {
-    this.repository = dataSource.getRepository(Settings);
+    this.repository = dataSource.getRepository(SettingsModel);
   }
 
   async save<T extends SettingsEntity, K extends SettingsKey<T>>(
@@ -53,19 +55,12 @@ export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
   async getAllValues<T extends SettingsEntity>(
     entityType: T,
     entityId: number
-  ): Promise<Partial<{ [K in SettingsKey<T>]: SettingsValueType<T, K> }>> {
-    const results = await this.repository.find({
+  ): Promise<Settings<T>[]> {
+    const settingsRaw = await this.repository.find({
       where: { entityType, entityId }
     });
 
-    return results.reduce((acc, cur) => {
-      try {
-        acc[cur.key as SettingsKey<T>] = JSON.parse(cur.value!);
-      } catch {
-        acc[cur.key as SettingsKey<T>] = cur.value;
-      }
-      return acc;
-    }, {} as any);
+    return SettingsMapper.toDomain(settingsRaw);
   }
 
   async deleteKey<T extends SettingsEntity, K extends SettingsKey<T>>(

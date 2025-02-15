@@ -47,6 +47,20 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
     return results.map(r => r.chat_id);
   }
 
+  async getUserChats(userId: number): Promise<{chatId: number; chatTitle: string}[]> {
+    const results = await this.repository
+      .createQueryBuilder()
+      .select('DISTINCT ON (chat_id) chat_id', 'chatId')
+      .addSelect('chat_title', 'chatTitle')
+      .where({ user_id: userId })
+      .getRawMany();
+
+    return results.map(r => ({
+      chatId: r.chatId,
+      chatTitle: r.chatTitle
+    }));
+  }
+
   private toOrmModel(message: Message): Messages {
     const ormMessage = new Messages();
     Object.assign(ormMessage, {
