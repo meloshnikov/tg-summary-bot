@@ -1,15 +1,25 @@
-### Структура приложения
+# Telegram bot on a Clean Architecture
+
+An example of a Telegram bot built on clean architecture principles.
+
+### Application structure
 ```
-📦 src/  
-├── 📂 core/  
-│   ├── 📁 entities/           ─▶ Бизнес-сущности  
-│   ├── 📁 ports/              ◀─ Интерфейсы для внешнего мира  
-│   └── 📁 usecases/           🕹️ Сценарии использования  
-├── 📂 infrastructure/  
-│   ├── 📁 config/             ⚙️ Конфигурация приложения  
-│   ├── 📁 database/           🗃️ Реализации работы с БД  
-│   ├── 📁 llm/                🤖 LLM-провайдеры  
-│   └── 📁 presentation/       ✈️ (TelegramAdapter и др.)  
-├── 📂 application/            🚀 Сборка и запуск  
-└── 📄 index.ts                 📍 Точка входа  
+# src/  
+├── # core/  
+│   ├── # entities/           Business entities
+│   ├── # ports/              Interfaces to the outside world
+│   ├── # usecases/           Use cases
+│   ├── # mappers/            Data conversion between layers
+│   ├── # schemas/            Validation and types for customizations
+│   └── # services/           Domain logic services
+├── # infrastructure/  
+│   ├── # config/             Application configuration
+│   ├── # database/           Database implementations
+│   ├── # llm/                LLM providers
+│   ├── # cache/              Caching implementations 
+│   ├── # di/                 DI container
+│   ├── # scheduler/          Task Scheduler (Cron)
+│   └── # presentation/       Telegram bot
+├── # application/            Build and Run
+└── * index.ts                Entry point
 ```
