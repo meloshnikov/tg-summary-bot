@@ -1,9 +1,9 @@
-import { Chat, Update } from "telegraf/typings/core/types/typegram";
-import { Context, Markup, Telegraf } from "telegraf";
+
 import { envConfig } from "../../config";
 import { TelegramBotPort, UseCaseFactoryPort } from "src/core/ports";
 import { TelegramMapper } from "src/core/mappers";
 import { configureHandlers } from "./handlers";
+import { Chat, Context, Markup, Telegraf, Update } from "./types";
 
 
 export class TelegramBotAdapter implements TelegramBotPort {
@@ -50,7 +50,7 @@ export class TelegramBotAdapter implements TelegramBotPort {
         'Выбери чат для просмотра настроек.',
         Markup.inlineKeyboard([
           activeUserChats.map(({ chatId, chatTitle }) => 
-            Markup.button.callback(chatTitle, `chat_select:${chatId}`)
+            Markup.button.callback(chatTitle, `chat_select:chat:${chatId}`)
           )
         ])
       );

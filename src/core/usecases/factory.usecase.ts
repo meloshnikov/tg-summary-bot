@@ -3,6 +3,7 @@ import { UseCaseFactoryPort } from "../ports/usecase-factory.port";
 import { DeleteExpiredMessages } from "./delete-expired-messages.usecase";
 import { GenerateReport } from "./generate-report.usecase";
 import { GetEntitySettings } from "./get-entity-settings.usecase";
+import { UpdateEntityiSetting } from "./update-setting.usecase";
 import { GetUserChats } from "./get-user-chats.usecase";
 import { SaveMessage } from "./save-messages.usecase";
 
@@ -33,13 +34,7 @@ export class UseCaseFactory implements UseCaseFactoryPort {
     return new GetEntitySettings(this.settingsService);
   }
 
-  /* добавить сценарий переключения llm сервисов */
-  // extractProviderLLM = (text: string): ProbviderLLM => {
-  //   const provaderBy: Record<string, ProbviderLLM> = {
-  //     google: ProbviderLLM.Google,
-  //     openai: ProbviderLLM.Openai,
-  //   };
-
-  //   return provaderBy[text] ?? ProbviderLLM.Google
-  // };
+  getUpdateEntitySetting() {
+    return new UpdateEntityiSetting(this.settingsService);
+  }
 }

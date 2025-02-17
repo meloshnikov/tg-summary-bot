@@ -1,5 +1,5 @@
 import { TelegramBotPort } from "src/core/ports";
-import { HandlerConfig } from "./types";
+import { HandlerConfig } from "../types";
 
 export const hears = (adapter: TelegramBotPort): HandlerConfig[] => [
   {

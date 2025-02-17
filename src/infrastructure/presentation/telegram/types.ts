@@ -1,4 +1,5 @@
-import { Context, Middleware } from "telegraf";
+import { Context, Middleware, Telegram } from "telegraf";
+import ApiClient from "telegraf/typings/core/network/client";
 import { Update } from "telegraf/typings/core/types/typegram";
 
 export type HandlerConfig = 
@@ -35,3 +36,13 @@ export interface HearsConfig extends BaseHandlerConfig<'hears'> {
 export interface MiddlewareConfig extends BaseHandlerConfig<'middleware'> {
   handler: Middleware<Context<Update>>;
 }
+
+
+type Tail<T> = T extends [unknown, ...infer U] ? U : never
+
+export type Shorthand<FName extends Exclude<keyof Telegram, keyof ApiClient>> = Tail<
+  Parameters<Telegram[FName]>
+>
+
+export { Context, Markup, Telegraf } from "telegraf";
+export { Chat, Update, CallbackQuery } from "telegraf/typings/core/types/typegram";

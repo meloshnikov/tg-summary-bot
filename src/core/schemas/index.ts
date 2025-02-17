@@ -1,1 +1,1 @@
-export { SettingsEntity, SettingsKey, SettingsType, SettingsValueType, SettingsParams, SettingsSchema } from "./settings-schema";
+export { SettingsEntity, SettingsKey, SettingsType, SettingsValueType, SettingsParams, SettingsSchemaKeys, SettingsSchema } from "./settings-schema";

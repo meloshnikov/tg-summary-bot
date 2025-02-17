@@ -35,7 +35,7 @@ export class SettingsService implements SettingsServicePort {
     key: K,
     value: SettingsValueType<T, K>,
     lastModifiedBy?: number
-  ): Promise<void> {
+  ): Promise<void> { 
     await this.repository.save(entityType, entityId, key, value, lastModifiedBy);
     await this.cache.set(entityType, entityId, key, value);
   }

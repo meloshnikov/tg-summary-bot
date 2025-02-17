@@ -1,21 +1,14 @@
 import { UseCase } from "../entities";
-import { SettingsEntity, SettingsKey, SettingsValueType } from "../schemas";
-import { SettingsService } from "../services";
+import { SettingsServicePort } from "../ports";
+import { SettingsEntity, SettingsKey, SettingsParams } from "../schemas";
 
-type Params<T extends SettingsEntity, K extends SettingsKey<T>> = {
-  entityType: T;
-  entityId: number;
-  key: K;
-  value: SettingsValueType<T, K>;
-  modifiedBy?: number;
-};
 
-export class UpdateSetting<T extends SettingsEntity, K extends SettingsKey<T>> 
-  implements UseCase<Params<T, K>, void> {
+export class UpdateEntityiSetting<T extends SettingsEntity, K extends SettingsKey<T>> 
+  implements UseCase<SettingsParams<'update', T, K>, void> {
   
-  constructor(private settingsService: SettingsService) {}
+  constructor(private settingsService: SettingsServicePort) {}
 
-  async execute(params: Params<T, K>): Promise<void> {
+  async execute(params: SettingsParams<'update', T, K>): Promise<void> {
     await this.settingsService.set(
       params.entityType,
       params.entityId,

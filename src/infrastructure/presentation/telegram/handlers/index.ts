@@ -3,7 +3,7 @@ import { middlewares } from "./middlewares";
 import { commands } from "./comands";
 import { actions } from "./actions";
 import { hears } from "./hears";
-import { HandlerConfig } from "./types";
+import { HandlerConfig } from "../types";
 
 
 export type HandlerModule = (adapter: TelegramBotPort) => HandlerConfig[];
