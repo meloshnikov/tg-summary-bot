@@ -9,9 +9,11 @@ import { Chat, Context, Markup, Telegraf, Update } from "./types";
 export class TelegramBotAdapter implements TelegramBotPort {
   private botName: string;
   private telegraf: Telegraf;
+  public state: Map<string, string>;
 
   constructor(public readonly useCaseFactory: UseCaseFactoryPort) {
     this.telegraf = new Telegraf(envConfig.get('TELEGRAM_BOT_TOKEN'));
+    this.state = new Map<string, string>();
     this.botName = 'undefined';
     this.registerHandlers();
   }

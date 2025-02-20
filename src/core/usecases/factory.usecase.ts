@@ -1,4 +1,4 @@
-import { LLMFactoryPort, MessageRepositoryPort, SettingsServicePort } from "../ports";
+import { EncryptionServicePort, LLMFactoryPort, KeyManagerPort, MessageRepositoryPort, SettingsServicePort } from "../ports";
 import { UseCaseFactoryPort } from "../ports/usecase-factory.port";
 import { DeleteExpiredMessages } from "./delete-expired-messages.usecase";
 import { GenerateReport } from "./generate-report.usecase";
@@ -12,14 +12,15 @@ export class UseCaseFactory implements UseCaseFactoryPort {
     private readonly settingsService: SettingsServicePort,
     private readonly messageRepo: MessageRepositoryPort,
     private readonly llmFactory: LLMFactoryPort,
+    private readonly encryptionService: EncryptionServicePort,
   ) {}
 
   getGenerateReport() {
-    return new GenerateReport(this.messageRepo, this.llmFactory.createService());
+    return new GenerateReport(this.messageRepo, this.llmFactory.createService(), this.encryptionService);
   }
 
   getSaveMessage() {
-    return new SaveMessage(this.messageRepo, this.settingsService);
+    return new SaveMessage(this.messageRepo, this.settingsService, this.encryptionService);
   }
 
   getDeleteExpiredMessages() {

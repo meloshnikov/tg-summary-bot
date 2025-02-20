@@ -9,6 +9,7 @@ interface UseCaseFactoryProvider {
 }
 
 export interface TelegramBotPort extends UseCaseFactoryProvider {
+  state: Map<string, string>;
   start(): void;
   isMsgForBot: (message: any) => boolean;
   initBotName: (ctx: Context<Update>) => void;
@@ -16,5 +17,4 @@ export interface TelegramBotPort extends UseCaseFactoryProvider {
   contextToMessage: (ctx: Context<Update>) => Message | null;
   contextToUser: (ctx: Context<Update>) => User;
   handleSettingsCommand(ctx: Context): Promise<void>;
-  
 }

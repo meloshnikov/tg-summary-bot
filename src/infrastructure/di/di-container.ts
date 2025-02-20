@@ -1,5 +1,16 @@
 import { DataSource } from "typeorm";
-import { TelegramBotPort, LLMFactoryPort, MessageRepositoryPort, SchedulerPort, UseCaseFactoryPort, SettingsRepositoryPort, SettingsServicePort, CachePort } from "src/core/ports";
+import {
+  TelegramBotPort,
+  LLMFactoryPort,
+  MessageRepositoryPort,
+  SchedulerPort,
+  UseCaseFactoryPort,
+  SettingsRepositoryPort,
+  SettingsServicePort,
+  CachePort,
+  KeyManagerPort,
+  EncryptionServicePort,
+} from "src/core/ports";
 
 interface ContainerTypes {
   Database: DataSource;
@@ -11,6 +22,8 @@ interface ContainerTypes {
   UseCaseFactory: UseCaseFactoryPort;
   CronScheduler: SchedulerPort;
   SettingsService: SettingsServicePort;
+  KeyManagerService: KeyManagerPort,
+  EncryptionService: EncryptionServicePort,
 }
 
 type ContainerName = keyof ContainerTypes;

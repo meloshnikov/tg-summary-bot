@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "build": "tsc"
+    "start": "npm run start:db && npm run start:app",
+    "start:db": "docker-compose -f docker-compose.dev.yml up -d postgres && npm run wait-for-db",
+    "start:app": "cross-env NODE_ENV=development ts-node src/index.ts",
+    "stop:db": "docker-compose -f docker-compose.dev.yml down",
+    "wait-for-db": "wait-on tcp:${DB_PORT:-5432}",
+    "build": "tsc",
+    "start:prod": "docker-compose up"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.9",
     "cron": "^3.5.0",
     "dotenv": "^16.3.1",
     "module-alias": "^2.2.3",
@@ -18,9 +24,11 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "wait-on": "^8.0.2"
   },
   "_moduleAliases": {
     "src": "./dist"

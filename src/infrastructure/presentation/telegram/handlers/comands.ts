@@ -1,5 +1,5 @@
 import { TelegramBotPort } from "src/core/ports";
-import { HandlerConfig } from "../types";
+import { HandlerConfig, Markup } from "../types";
 
 export const commands = (adapter: TelegramBotPort): HandlerConfig[] => [
   {
@@ -7,7 +7,7 @@ export const commands = (adapter: TelegramBotPort): HandlerConfig[] => [
     name: 'settings',
     description: 'Управление настройками чата',
     handler: adapter.handleSettingsCommand,
-  }
+  },
 ];
 
 

@@ -2,6 +2,7 @@ export const SettingsSchema = {
   chat: {
     retention_days: 'number',
     llm_provider: 'string',
+    encrypted_key: 'string',
   },
 } as const;
 

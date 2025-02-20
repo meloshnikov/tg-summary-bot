@@ -59,9 +59,9 @@ export const actions = (adapter: TelegramBotPort): HandlerConfig[] => {
         await handleChatSelectCommand(ctx)
       }
     },
+ 
   ];
 };
-
 
 const createChatSelectHandler = (adapter: TelegramBotPort) => {
   return async (ctx: Context<Update>) => {

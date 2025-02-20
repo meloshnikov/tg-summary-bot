@@ -7,3 +7,5 @@ export { SchedulerPort } from "./scheduler.port";
 export { SettingsRepositoryPort } from "./settings-repository.port";
 export { SettingsServicePort } from "./settings-service.port";
 export { CachePort } from "./cache.port";
+export { EncryptionServicePort } from "./encryption.port";
+export { KeyManagerPort } from "./key-manager.port";

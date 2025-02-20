@@ -1,6 +1,6 @@
 import { Context, Middleware, Telegram } from "telegraf";
 import ApiClient from "telegraf/typings/core/network/client";
-import { Update } from "telegraf/typings/core/types/typegram";
+import { Message, Update } from "telegraf/typings/core/types/typegram";
 
 export type HandlerConfig = 
   | CommandConfig
@@ -30,7 +30,7 @@ export interface ActionConfig extends BaseHandlerConfig<'action'> {
 export interface HearsConfig extends BaseHandlerConfig<'hears'> {
   pattern: RegExp;
   description?: string;
-  handler: (ctx: Context<Update>) => Promise<void>;
+  handler: (ctx: Context<Update> & { message: Message.TextMessage }) => Promise<void>;
 }
 
 export interface MiddlewareConfig extends BaseHandlerConfig<'middleware'> {

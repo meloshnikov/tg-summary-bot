@@ -1,4 +1,4 @@
-import { DataSource, In, Repository } from "typeorm";
+import { DataSource, In, Not, Repository } from "typeorm";
 import { Settings as SettingsModel } from "./settings-repository.model";
 import { SettingsRepositoryPort } from "src/core/ports";
 import { SettingsEntity, SettingsKey, SettingsValueType } from "src/core/schemas/settings-schema";
@@ -57,7 +57,7 @@ export class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     entityId: number
   ): Promise<Settings<T>[]> {
     const settingsRaw = await this.repository.find({
-      where: { entityType, entityId }
+      where: { entityType, entityId, key: Not("encrypted_key") }
     });
 
     return SettingsMapper.toDomain(settingsRaw);

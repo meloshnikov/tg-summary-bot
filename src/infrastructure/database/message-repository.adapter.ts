@@ -16,7 +16,9 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
   }
 
   async getTodayMessages(chatId: number): Promise<Message[]> {
-    const today = Math.floor(Date.now() / 1000) - 86400;
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const today = Math.floor(startOfDay.getTime() / 1000); 
     const messages = await this.repository.find({
       where: {
         chat_id: chatId,
@@ -67,6 +69,7 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
       user_id: message.userId,
       chat_id: message.chatId,
       date: message.date,
+      text: message.text,
       expiration_date: message.expirationDate,
       first_name: message.firstName,
       last_name: message.lastName,
@@ -75,7 +78,6 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
       is_premium: message.isPremium || false,
       chat_title: message.chatTitle,
       chat_type: message.chatType,
-      text: message.text,
     });
     return ormMessage;
   }
@@ -85,6 +87,7 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
       ormMessage.user_id,
       ormMessage.chat_id,
       ormMessage.date,
+      ormMessage.text || '',
       ormMessage.expiration_date,
       ormMessage.first_name,
       ormMessage.last_name,
@@ -93,7 +96,6 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
       ormMessage.is_premium,
       ormMessage.chat_title,
       ormMessage.chat_type,
-      ormMessage.text || '',
     );
   }
 }

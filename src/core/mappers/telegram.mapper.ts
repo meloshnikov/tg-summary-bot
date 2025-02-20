@@ -11,6 +11,7 @@ export class TelegramMapper {
       message?.from.id,
       message?.chat.id,
       message?.date,
+      message?.text ?? message?.caption,
       undefined,
       message?.from.first_name,
       message?.from.last_name,
@@ -19,7 +20,6 @@ export class TelegramMapper {
       Boolean(message?.from.is_premium) ?? false,
       message?.chat.title,
       message?.chat.type,
-      message?.text ?? message?.caption,
     );
   }
 

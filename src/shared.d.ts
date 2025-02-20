@@ -8,6 +8,8 @@ interface ProcessEnv {
   DB_NAME: string;
   DB_HOST: string;
   DB_PORT: string;
+  MKV_HOST: string;
+  MKV_API_TOKEN: string;
 }
 
 declare global {

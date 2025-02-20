@@ -15,5 +15,5 @@ export const hears = (adapter: TelegramBotPort): HandlerConfig[] => [
       await ctx.telegram.deleteMessage(ctx.chat.id, standByMessage.message_id);
       await ctx.reply(summaryReport);
     }
-  }
+  },
 ];
