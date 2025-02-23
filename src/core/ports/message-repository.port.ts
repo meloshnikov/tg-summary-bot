@@ -5,5 +5,5 @@ export interface MessageRepositoryPort {
   getTodayMessages(chatId: number): Promise<Message[]>;
   deleteMessagesOlderThan(timestamp: number): Promise<number>;
   getAllChatIds(): Promise<number[]>;
-  getUserChats(userId: number): Promise<{chatId: number; chatTitle: string}[]>;
+  getUserChatIds(userId: number): Promise<number[]>;
 }

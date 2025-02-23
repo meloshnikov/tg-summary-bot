@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run start:db && npm run start:app",
+    "start": "npm run start:db && npm run build && npm run start:app",
     "start:db": "docker-compose -f docker-compose.dev.yml up -d postgres && npm run wait-for-db",
     "start:app": "cross-env NODE_ENV=development ts-node src/index.ts",
     "stop:db": "docker-compose -f docker-compose.dev.yml down",

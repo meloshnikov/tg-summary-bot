@@ -35,7 +35,7 @@ export class KeyManagementAdapter implements KeyManagerPort {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return this.loadProvidedMasterKey(retries - 1);
       }
-      throw new Error(`Cloudflare KV key fetch failed: ${error}`);
+      throw new Error(`Master Key Vault key fetch failed: ${error}`);
     }
   }
 
@@ -44,7 +44,7 @@ export class KeyManagementAdapter implements KeyManagerPort {
     const TOKEN = envConfig.get('MKV_API_TOKEN');
 
     if (!HOST || !TOKEN) {
-      throw new Error("Missing MKV configuration");
+      throw new Error("Missing Master Key Vault configuration");
     }
   
     const { data } = await axios.get<string>(`https://${HOST}`, { headers: { Authorization: `Bearer ${TOKEN}` }, responseType: 'text' });

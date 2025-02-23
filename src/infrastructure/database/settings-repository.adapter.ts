@@ -1,5 +1,5 @@
-import { DataSource, In, Not, Repository } from "typeorm";
-import { Settings as SettingsModel } from "./settings-repository.model";
+import { DataSource, Not, Repository } from "typeorm";
+import { SettingsModel } from "./settings-repository.model";
 import { SettingsRepositoryPort } from "src/core/ports";
 import { SettingsEntity, SettingsKey, SettingsValueType } from "src/core/schemas/settings-schema";
 import { SettingsMapper } from "src/core/mappers";

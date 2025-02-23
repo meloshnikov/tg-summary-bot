@@ -1,5 +1,6 @@
-import { Message, User } from "src/core/entities";
-import { Context } from "telegraf";
+import { Chat, Message, User } from "src/core/entities";
+import { AbstractChatMember, ChatFromGetChat, Context } from "./types";
+
 
 export class TelegramMapper {
   static contextToMessage(ctx: Context): Message | null {
@@ -8,18 +9,27 @@ export class TelegramMapper {
     if (!message?.text?.trim()) return null;
 
     return new Message(
+      message?.date,
       message?.from.id,
       message?.chat.id,
-      message?.date,
       message?.text ?? message?.caption,
       undefined,
-      message?.from.first_name,
-      message?.from.last_name,
-      message?.from.username,
-      message?.from.language_code,
-      Boolean(message?.from.is_premium) ?? false,
-      message?.chat.title,
-      message?.chat.type,
+    );
+  }
+  static chatToDomain(chat: ChatFromGetChat & { title?: string }): Chat {
+    return new Chat(
+      chat.id,
+      chat.title ?? '',
+      chat.type ?? ''
+    );
+  }
+
+  static userToDomain({user}: AbstractChatMember ): User {
+    return new User(
+      user.id!,
+      user.first_name,
+      user.last_name,
+      user.username,
     );
   }
 

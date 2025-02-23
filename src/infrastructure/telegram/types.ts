@@ -45,4 +45,4 @@ export type Shorthand<FName extends Exclude<keyof Telegram, keyof ApiClient>> = 
 >
 
 export { Context, Markup, Telegraf } from "telegraf";
-export { Chat, Update, CallbackQuery } from "telegraf/typings/core/types/typegram";
+export { Chat, Update, CallbackQuery, ChatFromGetChat, ChatMember, AbstractChatMember } from "telegraf/typings/core/types/typegram";

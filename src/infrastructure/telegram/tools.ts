@@ -1,5 +1,5 @@
 import { SettingsEntity, SettingsKey, SettingsSchema, SettingsValueType } from "src/core/schemas";
-import { CallbackQuery, Context } from "../types";
+import { CallbackQuery, Context } from "./types";
 
 
 type SettingsParams<T extends SettingsEntity> = {

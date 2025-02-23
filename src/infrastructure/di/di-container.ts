@@ -10,6 +10,9 @@ import {
   CachePort,
   KeyManagerPort,
   EncryptionServicePort,
+  ExternalDataServicePort,
+  UserInfoProviderPort,
+  ChatInfoProviderPort,
 } from "src/core/ports";
 
 interface ContainerTypes {
@@ -21,9 +24,12 @@ interface ContainerTypes {
   SettingsRepository: SettingsRepositoryPort;
   UseCaseFactory: UseCaseFactoryPort;
   CronScheduler: SchedulerPort;
+  UserInfoProvider: UserInfoProviderPort,
+  ChatInfoProvider: ChatInfoProviderPort,
   SettingsService: SettingsServicePort;
   KeyManagerService: KeyManagerPort,
   EncryptionService: EncryptionServicePort,
+  ExternalDataService: ExternalDataServicePort,
 }
 
 type ContainerName = keyof ContainerTypes;

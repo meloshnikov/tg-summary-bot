@@ -19,7 +19,7 @@ An example of a Telegram bot built on clean architecture principles.
 │   ├── # cache/              Caching implementations 
 │   ├── # di/                 DI container
 │   ├── # scheduler/          Task Scheduler (Cron)
-│   └── # presentation/       Telegram bot
+│   └── # telegram/           Telegram bot
 ├── # application/            Build and Run
 └── * index.ts                Entry point
 ```

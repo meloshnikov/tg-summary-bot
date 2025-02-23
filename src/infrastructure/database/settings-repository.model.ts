@@ -1,8 +1,8 @@
 import { Entity, PrimaryColumn, Column, Index } from "typeorm";
 
-@Entity()
+@Entity("settings")
 @Index(["entityType", "entityId", "key"], { unique: true })
-export class Settings {
+export class SettingsModel {
   @PrimaryColumn({ length: 20 })
   entityType!: string;
 

@@ -9,3 +9,6 @@ export { SettingsServicePort } from "./settings-service.port";
 export { CachePort } from "./cache.port";
 export { EncryptionServicePort } from "./encryption.port";
 export { KeyManagerPort } from "./key-manager.port";
+export { ExternalDataServicePort } from "./external-data-service.port"
+export { UserInfoProviderPort } from "./user-info-provider.port";
+export { ChatInfoProviderPort } from "./chat-info-provider.port";

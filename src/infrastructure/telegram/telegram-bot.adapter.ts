@@ -1,21 +1,34 @@
 
-import { envConfig } from "../../config";
-import { TelegramBotPort, UseCaseFactoryPort } from "src/core/ports";
+import { envConfig } from "../config";
+import { ExternalDataServicePort, TelegramBotPort, UseCaseFactoryPort } from "src/core/ports";
 import { TelegramMapper } from "src/core/mappers";
 import { configureHandlers } from "./handlers";
-import { Chat, Context, Markup, Telegraf, Update } from "./types";
+import { Chat as TgChat, Context, Markup, Telegraf, Update } from "./types";
+import { User, Chat } from "src/core/entities";
 
 
-export class TelegramBotAdapter implements TelegramBotPort {
-  private botName: string;
-  private telegraf: Telegraf;
-  public state: Map<string, string>;
+export class TelegramBotAdapter implements TelegramBotPort, ExternalDataServicePort {
+  private botName!: string;         // Definite assignment assertion
+  private telegraf!: Telegraf;      // Гарантируем инициализацию
+  public state!: Map<string, string>;
+  public useCaseFactory!: UseCaseFactoryPort;
 
-  constructor(public readonly useCaseFactory: UseCaseFactoryPort) {
+  constructor() {
+    this.initializeCoreComponents();
+  }
+
+  private initializeCoreComponents() {
     this.telegraf = new Telegraf(envConfig.get('TELEGRAM_BOT_TOKEN'));
     this.state = new Map<string, string>();
-    this.botName = 'undefined';
-    this.registerHandlers();
+    this.botName = 'initializing...';
+  }
+
+  public initialize(factory: UseCaseFactoryPort) {
+    if (!this.useCaseFactory) {
+      this.useCaseFactory = factory;
+      this.botName = this.telegraf.botInfo?.username || 'undefined';
+      this.registerHandlers();
+    }
   }
 
   private registerHandlers() {
@@ -51,7 +64,7 @@ export class TelegramBotAdapter implements TelegramBotPort {
       await ctx.reply(
         'Выбери чат для просмотра настроек.',
         Markup.inlineKeyboard([
-          activeUserChats.map(({ chatId, chatTitle }) => 
+          activeUserChats.map(({ id: chatId, title: chatTitle }) => 
             Markup.button.callback(chatTitle, `chat_select:chat:${chatId}`)
           )
         ])
@@ -66,13 +79,43 @@ export class TelegramBotAdapter implements TelegramBotPort {
     }
   };
 
+  public getChatInfo = async (chatIds: number[]) => {
+    const chats = await Promise.all(
+      chatIds.map(async (id) => 
+        await this.telegraf.telegram.getChat(id)
+          .then((chat) => TelegramMapper.chatToDomain(chat))
+          .catch((error) => {
+            console.error(`Error fetching chat ${id}:`, error);
+            return null;
+          })
+      )
+    );
+  
+    return chats.filter((chat): chat is Chat => chat !== null);
+  }
+
+  public getUsersInfo = async (chatId: number, userIds: number[]) => {
+    const members = await Promise.all(
+      userIds.map(async (userId) => 
+        await this.telegraf.telegram.getChatMember(chatId, userId)
+          .then((member) => TelegramMapper.userToDomain(member))
+          .catch((error) => {
+            console.error(`Error fetching user ${userId}:`, error);
+            return null;
+          })
+      )
+    );
+  
+    return members.filter((user): user is User => user !== null);
+  }
+
   public contextToMessage = (ctx: Context<Update>) => TelegramMapper.contextToMessage(ctx);
 
   public contextToUser = (ctx: Context<Update>) => TelegramMapper.contextToUser(ctx);
 
   public initBotName = (ctx: Context<Update>) => { this.botName = ctx.botInfo.username };
 
-  public isGroupChat(ctx: Context<Update>): ctx is Context<Update> & { chat: Chat.GroupChat | Chat.SupergroupChat } {
+  public isGroupChat(ctx: Context<Update>): ctx is Context<Update> & { chat: TgChat.GroupChat | TgChat.SupergroupChat } {
     return ['group', 'supergroup'].includes(ctx.chat?.type ?? '');
   };
 

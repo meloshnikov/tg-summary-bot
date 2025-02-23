@@ -3,7 +3,7 @@ import { envConfig } from "../config/env.config";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
-const PROMT = 'Ты опытный шпион, твоя задача составить сообщение командованию, в сообщении отразить суть переписки, не решенные вопросы и подписаться "С уважением, Товарищ майор":'
+const PROMT = 'Ты опытный помощник ведения встреч, твоя задача подвести промежуточные итоги обсуждений, требуется в сообщении отразить краткий пересказ основных тем обсуждения и не решенные вопросы, если такие остались. Ответ оформи в разговорном стиле для поста в telegram:'
 
 export class GoogleAIAdapter implements LLMServicePort {
   private googleAI = new GoogleGenerativeAI(envConfig.get('GEMINI_API_KEY'));

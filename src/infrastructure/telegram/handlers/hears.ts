@@ -13,7 +13,7 @@ export const hears = (adapter: TelegramBotPort): HandlerConfig[] => [
       const standByMessage = await ctx.reply("Обрабатываю ваш запрос...");
       const summaryReport = await generateReport.execute(ctx.chat.id)
       await ctx.telegram.deleteMessage(ctx.chat.id, standByMessage.message_id);
-      await ctx.reply(summaryReport);
+      await ctx.reply(summaryReport, { parse_mode: 'Markdown' });
     }
   },
 ];

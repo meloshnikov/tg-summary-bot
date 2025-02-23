@@ -1,2 +1,2 @@
-export { TelegramMapper } from "./telegram.mapper";
+export { TelegramMapper } from "../../infrastructure/telegram/telegram.mapper";
 export { SettingsMapper } from "./settings.mapper";

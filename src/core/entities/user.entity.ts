@@ -6,8 +6,3 @@ export class User {
     public readonly username?: string,
   ) {}
 }
-
-export type UserChat = {
-  chatId: number;
-  chatTitle: string;
-}

@@ -1,13 +1,13 @@
 import { DataSource, MoreThanOrEqual, Repository } from "typeorm";
 import { MessageRepositoryPort } from "src/core/ports";
-import { Message } from "src/core/entities";
-import { Messages } from "./message-repository.model";
+import { Chat, Message } from "src/core/entities";
+import { MessageModel } from "./message-repository.model";
 
 export class MessageRepositoryAdapter implements MessageRepositoryPort {
-  private repository: Repository<Messages>;
+  private repository: Repository<MessageModel>;
 
   constructor(dataSource: DataSource) {
-    this.repository = dataSource.getRepository(Messages);
+    this.repository = dataSource.getRepository(MessageModel);
   }
 
   async saveMessage(message: Message): Promise<void> {
@@ -46,56 +46,38 @@ export class MessageRepositoryAdapter implements MessageRepositoryPort {
       .select('DISTINCT("chat_id")', 'chat_id')
       .getRawMany();
 
-    return results.map(r => r.chat_id);
+    return results.map(({ chat_id }) => (chat_id));
   }
 
-  async getUserChats(userId: number): Promise<{chatId: number; chatTitle: string}[]> {
+  async getUserChatIds(userId: number): Promise<number[]> {
     const results = await this.repository
       .createQueryBuilder()
-      .select('DISTINCT ON (chat_id) chat_id', 'chatId')
-      .addSelect('chat_title', 'chatTitle')
+      .select('DISTINCT(chat_id)', 'chat_id')
       .where({ user_id: userId })
       .getRawMany();
 
-    return results.map(r => ({
-      chatId: r.chatId,
-      chatTitle: r.chatTitle
-    }));
+    return results.map(({ chat_id }) => (chat_id));
   }
 
-  private toOrmModel(message: Message): Messages {
-    const ormMessage = new Messages();
+  private toOrmModel(message: Message): MessageModel {
+    const ormMessage = new MessageModel();
     Object.assign(ormMessage, {
+      date: message.date,
       user_id: message.userId,
       chat_id: message.chatId,
-      date: message.date,
       text: message.text,
       expiration_date: message.expirationDate,
-      first_name: message.firstName,
-      last_name: message.lastName,
-      username: message.username,
-      language_code: message.languageCode,
-      is_premium: message.isPremium || false,
-      chat_title: message.chatTitle,
-      chat_type: message.chatType,
     });
     return ormMessage;
   }
 
-  private toEntity(ormMessage: Messages): Message {
+  private toEntity(ormMessage: MessageModel): Message {
     return new Message(
+      ormMessage.date,
       ormMessage.user_id,
       ormMessage.chat_id,
-      ormMessage.date,
       ormMessage.text || '',
       ormMessage.expiration_date,
-      ormMessage.first_name,
-      ormMessage.last_name,
-      ormMessage.username,
-      ormMessage.language_code,
-      ormMessage.is_premium,
-      ormMessage.chat_title,
-      ormMessage.chat_type,
     );
   }
 }
